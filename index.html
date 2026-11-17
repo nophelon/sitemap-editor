@@ -156,6 +156,13 @@ svg.i{width:17px;height:17px;stroke:currentColor;stroke-width:1.9;fill:none;stro
 .secpanel .sp-pos{font-size:11px;color:var(--muted)}
 .secpanel .sp-hint{margin-top:12px;font-size:11.5px;color:var(--muted);line-height:1.5}
 @media(max-width:760px){.editsplit{grid-template-columns:1fr}.secpanel{position:static}}
+/* 하단 고정바(흰 배경) */
+body{padding-bottom:88px}
+.footbar{position:fixed;left:0;right:0;bottom:0;display:block;margin:0 !important;padding:12px clamp(14px,4vw,30px) !important;background:#fff !important;border-top:1px solid #e7e7f0;box-shadow:0 -4px 18px -10px rgba(20,18,40,.18);z-index:50}
+.footbar-in{max-width:1040px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.footbar .act-ghost{color:#4a4860;border-color:#dedeea;background:#fff}
+.footbar .hint{color:#8b89a3}
+.footbar .act-primary{background:var(--accent);color:#fff}
 </style>
 </head>
 <body>
@@ -326,7 +333,7 @@ function renderSecPanel(mount, st){
     +`<div class="sp-list">${p.sections.map((x,i)=>`<div class="sp-block"><span class="sp-no">${i+1}</span><span class="sp-name">${secLabel(x)}</span><span class="sp-pos">${i===0?'맨 위':i===p.sections.length-1?'맨 아래':'중간'}</span></div>`).join('')}</div>`
     +`<div class="sp-hint">섹션 구성은 사이트 생성 시 자동으로 채워집니다.</div>`;
 }
-function foot(){return `<div class="footbar"><button class="act-ghost">${I.left} 이전</button><div style="display:flex;align-items:center;gap:14px"><span class="hint">저장하기=임시 저장 · 승인해야 다음 단계</span><button class="act-primary">이 구성으로 승인하기 ${I.arrow}</button></div></div>`;}
+function foot(){return `<div class="footbar"><div class="footbar-in"><button class="act-ghost">${I.left} 이전</button><div style="display:flex;align-items:center;gap:14px"><span class="hint">저장하기=임시 저장 · 승인해야 다음 단계</span><button class="act-primary">이 구성으로 승인하기 ${I.arrow}</button></div></div></div>`;}
 const st={sel:'fr-benefit',open:{},mode:'edit',onEye:()=>{st.mode='preview';}};tops().forEach(p=>st.open[p.id]=true);
 const tree=document.getElementById('tree'),pv=document.getElementById('pv'),secpanel=document.getElementById('secpanel');
 const paneEdit=document.getElementById('paneEdit'),panePrev=document.getElementById('panePrev');
