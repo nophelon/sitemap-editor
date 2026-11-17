@@ -96,6 +96,13 @@ svg.i{width:17px;height:17px;stroke:currentColor;stroke-width:1.9;fill:none;stro
 .pvframe{margin:6px;border:1px solid var(--line);border-radius:13px;overflow:hidden}
 .tiphint{margin:2px 8px 10px;font-size:12px;color:var(--muted);line-height:1.5;background:var(--panel-2);border:1px solid var(--line-2);border-radius:9px;padding:9px 12px}
 .tiphint b{color:var(--ink-2)}
+/* 추가 버튼: 점선 테두리·호버배경 제거, 평소 회색→호버 브랜드색, + 는 원형 실선 안 */
+.addrow{border:none !important;background:none !important;color:var(--muted);justify-content:flex-start;gap:9px;padding:8px 12px;font-weight:600}
+.addrow:hover{background:none !important;color:var(--accent)}
+.addrow.addsub{color:var(--muted)}
+.addrow.addsub:hover{background:none !important;color:var(--child)}
+.addrow .addcirc{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:grid;place-items:center;flex:0 0 auto}
+.addrow .addcirc svg.i{width:12px;height:12px;stroke-width:2.2}
 </style>
 </head>
 <body>
@@ -105,7 +112,7 @@ svg.i{width:17px;height:17px;stroke:currentColor;stroke-width:1.9;fill:none;stro
     <button class="themebtn" id="themebtn">◐ 라이트/다크</button>
   </div>
   <div class="card">
-    <div class="segbar"><div class="seg"><button id="tabEdit" class="on">✎ 편집</button><button id="tabPrev">👁 미리보기</button></div><span class="note" id="segnote"></span></div>
+    <div class="segbar"><div class="seg"><button id="tabEdit" class="on">✎ 편집</button><button id="tabPrev">👁 미리보기</button></div></div>
     <div class="pane pane-edit on" id="paneEdit"><div class="tiphint">⠿ 아이콘을 잡고 끌어 옮깁니다. <b>줄의 위/아래</b>에 놓으면 같은 줄의 형제로, <b>줄의 가운데</b>에 놓으면 그 메뉴의 <b>하위로 들어갑니다</b>. 상위를 다른 상위의 하위로 넣으면 그 하위들도 함께 따라가고, 하위를 꺼내 상위로 올릴 수도 있어요. 이름은 클릭해 바로 수정.</div><div class="tree" id="tree"></div></div>
     <div class="pane" id="panePrev"><div class="pvframe" id="pv"></div></div>
   </div>
@@ -221,19 +228,18 @@ function renderTree(mount, st, rerender){
       +`${hasK?`<span class="pill-cnt">하위 ${node.children.length}</span>`:''}`
       +`<span class="spacer"></span>`
       +`${hasK?`<button class="cv${open?' op':''}" title="하위 펼치기">${I.down}</button>`:''}`
-      +`${eye(node.id)}`
       +`${home?'':`<button class="ibtn danger sm2" title="삭제">${I.trash}</button>`}`;
     mount.appendChild(row);
     bindRow(row,node,depth);
     if(hasK&&open){
       node.children.forEach(c=>renderNode(c,depth+1));
-      const addK=el('button','addrow addsub',`${I.plus} 하위 페이지 추가`);addK.style.marginLeft=((depth+1)*24)+'px';addK.style.width=`calc(100% - ${(depth+1)*24}px)`;addK.onclick=()=>addChild(node.id,st,rerender);mount.appendChild(addK);
+      const addK=el('button','addrow addsub',`<span class="addcirc">${I.plus}</span> 하위 페이지 추가`);addK.style.marginLeft=((depth+1)*24)+'px';addK.style.width=`calc(100% - ${(depth+1)*24}px)`;addK.onclick=()=>addChild(node.id,st,rerender);mount.appendChild(addK);
     }else if(!home&&open&&!hasK){
-      const addK=el('button','addrow addsub',`${I.plus} 하위 페이지 추가`);addK.style.marginLeft=((depth+1)*24)+'px';addK.style.width=`calc(100% - ${(depth+1)*24}px)`;addK.onclick=()=>addChild(node.id,st,rerender);mount.appendChild(addK);
+      const addK=el('button','addrow addsub',`<span class="addcirc">${I.plus}</span> 하위 페이지 추가`);addK.style.marginLeft=((depth+1)*24)+'px';addK.style.width=`calc(100% - ${(depth+1)*24}px)`;addK.onclick=()=>addChild(node.id,st,rerender);mount.appendChild(addK);
     }
   };
   TREE.forEach(n=>renderNode(n,0));
-  const addT=el('button','addrow',`${I.plus} 상위 페이지 추가`);addT.onclick=()=>addTop(st,rerender);mount.appendChild(addT);
+  const addT=el('button','addrow',`<span class="addcirc">${I.plus}</span> 상위 페이지 추가`);addT.onclick=()=>addTop(st,rerender);mount.appendChild(addT);
 }
 
 /* 미리보기 — 상단 메뉴바(하위는 드롭다운, 더 깊으면 들여써서 표시). nav 클릭=선택. */
@@ -257,13 +263,12 @@ function foot(){return `<div class="footbar"><button class="act-ghost">${I.left}
 const st={sel:'fr-benefit',open:{},mode:'edit',onEye:()=>{st.mode='preview';}};tops().forEach(p=>st.open[p.id]=true);
 const tree=document.getElementById('tree'),pv=document.getElementById('pv');
 const paneEdit=document.getElementById('paneEdit'),panePrev=document.getElementById('panePrev');
-const tabEdit=document.getElementById('tabEdit'),tabPrev=document.getElementById('tabPrev'),segnote=document.getElementById('segnote');
+const tabEdit=document.getElementById('tabEdit'),tabPrev=document.getElementById('tabPrev');
 function render(focusId){
   renderTree(tree,st,render);
   if(st.mode==='preview')renderPreview(pv,st,render);
   paneEdit.classList.toggle('on',st.mode==='edit');panePrev.classList.toggle('on',st.mode==='preview');
   tabEdit.classList.toggle('on',st.mode==='edit');tabPrev.classList.toggle('on',st.mode==='preview');
-  segnote.textContent=st.mode==='edit'?tops().length+'개 상위 메뉴 · 끌어서 계층 이동·추가·삭제·이름수정':'지금 보는 페이지: '+find(st.sel).p.title;
   if(focusId&&st.mode==='edit'){const n=tree.querySelector('[data-id="'+focusId+'"] .tn');if(n){n.focus();selectText(n);}}
 }
 tabEdit.onclick=()=>{st.mode='edit';render();};tabPrev.onclick=()=>{st.mode='preview';render();};
