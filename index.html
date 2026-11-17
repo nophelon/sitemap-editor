@@ -225,7 +225,6 @@ function renderTree(mount, st, rerender){
     row.innerHTML=`${home?`<span class="tico hm">${I.home}</span>`:`<span class="grip" title="드래그해서 이동 (위/아래=형제, 가운데=하위로)">${I.grip}</span><span class="tico top">${I.page}</span>`}`
       +`<span class="tn"${home?'':' contenteditable spellcheck="false"'}>${esc(node.title)}</span>`
       +`${home?'<span class="pill-home">첫 화면</span>':(depth>0?'<span class="pill-sub">하위</span>':'')}`
-      +`${hasK?`<span class="pill-cnt">하위 ${node.children.length}</span>`:''}`
       +`<span class="spacer"></span>`
       +`${hasK?`<button class="cv${open?' op':''}" title="하위 펼치기">${I.down}</button>`:''}`
       +`${home?'':`<button class="ibtn danger sm2" title="삭제">${I.trash}</button>`}`;
