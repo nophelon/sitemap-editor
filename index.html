@@ -124,6 +124,12 @@ svg.i{width:17px;height:17px;stroke:currentColor;stroke-width:1.9;fill:none;stro
 /* 탭: 동일 폭 + 아이콘 없이 가운데 정렬 */
 .seg{display:flex;width:260px;max-width:100%}
 .seg button{flex:1 1 0;justify-content:center;text-align:center;gap:0;padding:8px 10px}
+/* 세그바: 탭 왼쪽, 도움말 오른쪽 */
+.segbar{justify-content:space-between}
+.helpbtn{display:inline-flex;align-items:center;gap:7px;width:auto;height:auto;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:5px 13px 5px 6px;font-size:12.5px;font-weight:600;cursor:help;font-family:inherit}
+.helpbtn .q{width:18px;height:18px;border-radius:50%;border:1.5px solid currentColor;display:grid;place-items:center;font-size:11px;font-weight:800;line-height:1}
+.helpbtn:hover{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.helpbox{left:auto;right:0}
 </style>
 </head>
 <body>
@@ -134,12 +140,10 @@ svg.i{width:17px;height:17px;stroke:currentColor;stroke-width:1.9;fill:none;stro
   </div>
   <div class="card">
     <div class="segbar">
-      <div class="segleft">
-        <div class="helpwrap">
-          <button class="helpbtn" aria-label="사용 방법 안내">?</button>
-          <div class="helpbox"><b>사용 방법</b><br>⠿ 아이콘을 잡고 끌어 옮깁니다. <b>줄의 위/아래</b>에 놓으면 같은 줄의 형제로, <b>줄의 가운데</b>에 놓으면 그 메뉴의 <b>하위로</b> 들어갑니다. 상위를 다른 상위의 하위로 넣으면 그 하위들도 함께 따라가고, 하위를 꺼내 상위로 올릴 수도 있어요. 이름은 클릭해 바로 수정.</div>
-        </div>
-        <div class="seg"><button id="tabEdit" class="on">편집</button><button id="tabPrev">미리보기</button></div>
+      <div class="seg"><button id="tabEdit" class="on">편집</button><button id="tabPrev">미리보기</button></div>
+      <div class="helpwrap">
+        <button class="helpbtn" aria-label="수정 가이드"><span class="q">?</span>수정 가이드</button>
+        <div class="helpbox"><b>수정 가이드</b><br>⠿ 아이콘을 잡고 끌어 옮깁니다. <b>줄의 위/아래</b>에 놓으면 같은 줄의 형제로, <b>줄의 가운데</b>에 놓으면 그 메뉴의 <b>하위로</b> 들어갑니다. 상위를 다른 상위의 하위로 넣으면 그 하위들도 함께 따라가고, 하위를 꺼내 상위로 올릴 수도 있어요. 이름은 클릭해 바로 수정.</div>
       </div>
     </div>
     <div class="pane pane-edit on" id="paneEdit"><div class="tree" id="tree"></div></div>
@@ -253,7 +257,7 @@ function renderTree(mount, st, rerender){
     row.style.marginLeft=(depth*24)+'px';
     row.innerHTML=`${home?`<span class="tico hm">${I.home}</span>`:`<span class="grip" title="드래그해서 이동 (위/아래=형제, 가운데=하위로)">${I.grip}</span><span class="tico top">${I.page}</span>`}`
       +`<span class="tn"${home?'':' contenteditable spellcheck="false"'}>${esc(node.title)}</span>`
-      +`${home?'<span class="pill-home">첫 화면</span>':''}`
+      
       +`<span class="spacer"></span>`
       +`${hasK?`<button class="cv${open?' op':''}" title="하위 펼치기">${I.down}</button>`:''}`
       +`${home?'':`<button class="ibtn danger sm2" title="삭제">${I.trash}</button>`}`;
