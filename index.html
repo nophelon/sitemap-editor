@@ -141,6 +141,21 @@ svg.i{width:17px;height:17px;stroke:currentColor;stroke-width:1.9;fill:none;stro
 .segbar{position:relative;justify-content:center}
 .seg{margin-left:auto;margin-right:auto}
 .helpwrap{position:absolute;right:8px;top:50%;transform:translateY(-50%)}
+/* 편집 영역 2단: 왼쪽 트리 + 오른쪽 섹션 구성 패널 */
+.editsplit{display:grid;grid-template-columns:1fr 330px;gap:16px;align-items:start}
+.secpanel{padding:16px;position:sticky;top:14px}
+.secpanel .sp-head{font-size:11.5px;color:var(--muted);font-weight:600}
+.secpanel .sp-crumb{color:var(--child)}
+.secpanel .sp-title{font-size:17px;letter-spacing:-.01em;margin:3px 0 7px;font-weight:700}
+.secpanel .sp-pur{font-size:12.5px;color:var(--ink-2);margin:0 0 14px;line-height:1.55}
+.secpanel .sp-lbl{font-size:11.5px;color:var(--muted);font-weight:600;margin-bottom:8px}
+.secpanel .sp-list{display:flex;flex-direction:column;gap:7px}
+.secpanel .sp-block{display:flex;align-items:center;gap:10px;border:1px solid var(--line-2);background:var(--panel-2);border-radius:9px;padding:9px 11px;font-size:13px}
+.secpanel .sp-no{width:22px;height:22px;border-radius:6px;background:var(--accent-soft);color:var(--accent-soft-ink);font-size:11px;font-weight:700;display:grid;place-items:center;flex:0 0 auto}
+.secpanel .sp-name{font-weight:600;flex:1}
+.secpanel .sp-pos{font-size:11px;color:var(--muted)}
+.secpanel .sp-hint{margin-top:12px;font-size:11.5px;color:var(--muted);line-height:1.5}
+@media(max-width:760px){.editsplit{grid-template-columns:1fr}.secpanel{position:static}}
 </style>
 </head>
 <body>
@@ -157,7 +172,7 @@ svg.i{width:17px;height:17px;stroke:currentColor;stroke-width:1.9;fill:none;stro
         <div class="helpbox"><b>수정 가이드</b><br>⠿ 아이콘을 잡고 끌어 옮깁니다. <b>줄의 위/아래</b>에 놓으면 같은 줄의 형제로, <b>줄의 가운데</b>에 놓으면 그 메뉴의 <b>하위로</b> 들어갑니다. 상위를 다른 상위의 하위로 넣으면 그 하위들도 함께 따라가고, 하위를 꺼내 상위로 올릴 수도 있어요. 이름은 클릭해 바로 수정.</div>
       </div>
     </div>
-    <div class="pane pane-edit on" id="paneEdit"><div class="tree" id="tree"></div></div>
+    <div class="pane pane-edit on" id="paneEdit"><div class="editsplit"><div class="tree" id="tree"></div><div class="card secpanel" id="secpanel"></div></div></div>
     <div class="pane" id="panePrev"><div class="pvframe" id="pv"></div></div>
   </div>
   <div id="footmount"></div>
@@ -302,13 +317,23 @@ function renderPreview(mount, st, rerender){
   cv.innerHTML=`<div class="pv-pagebar">${esc(p.title)} · ${p.sections.length}개 섹션</div>`+p.sections.map((s,i)=>`<div class="pv-wire"><span class="pv-dot"></span><b>${secLabel(s)}</b><span class="pv-tag">${i===0?'맨 위':i===p.sections.length-1?'맨 아래':'중간'}</span></div>`).join('');
   mount.innerHTML='';mount.appendChild(nav);mount.appendChild(cv);
 }
+function renderSecPanel(mount, st){
+  const {p,par}=find(st.sel);
+  mount.innerHTML=`<div class="sp-head">${par?`<span class="sp-crumb">${esc(par.title)} ›</span> `:''}선택한 메뉴</div>`
+    +`<div class="sp-title">${esc(p.title)}</div>`
+    +`<p class="sp-pur">${esc(p.purpose)}</p>`
+    +`<div class="sp-lbl">이 페이지의 섹션 구성 · ${p.sections.length}개</div>`
+    +`<div class="sp-list">${p.sections.map((x,i)=>`<div class="sp-block"><span class="sp-no">${i+1}</span><span class="sp-name">${secLabel(x)}</span><span class="sp-pos">${i===0?'맨 위':i===p.sections.length-1?'맨 아래':'중간'}</span></div>`).join('')}</div>`
+    +`<div class="sp-hint">섹션 구성은 사이트 생성 시 자동으로 채워집니다.</div>`;
+}
 function foot(){return `<div class="footbar"><button class="act-ghost">${I.left} 이전</button><div style="display:flex;align-items:center;gap:14px"><span class="hint">저장하기=임시 저장 · 승인해야 다음 단계</span><button class="act-primary">이 구성으로 승인하기 ${I.arrow}</button></div></div>`;}
 const st={sel:'fr-benefit',open:{},mode:'edit',onEye:()=>{st.mode='preview';}};tops().forEach(p=>st.open[p.id]=true);
-const tree=document.getElementById('tree'),pv=document.getElementById('pv');
+const tree=document.getElementById('tree'),pv=document.getElementById('pv'),secpanel=document.getElementById('secpanel');
 const paneEdit=document.getElementById('paneEdit'),panePrev=document.getElementById('panePrev');
 const tabEdit=document.getElementById('tabEdit'),tabPrev=document.getElementById('tabPrev');
 function render(focusId){
   renderTree(tree,st,render);
+  renderSecPanel(secpanel,st);
   if(st.mode==='preview')renderPreview(pv,st,render);
   paneEdit.classList.toggle('on',st.mode==='edit');panePrev.classList.toggle('on',st.mode==='preview');
   tabEdit.classList.toggle('on',st.mode==='edit');tabPrev.classList.toggle('on',st.mode==='preview');
